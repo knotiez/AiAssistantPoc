@@ -1,3 +1,5 @@
+import "dotenv/config";
+
 import { CommandFactory } from "nest-commander";
 import { IngestionModule } from "./ingestion/ingestion.module";
 

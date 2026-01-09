@@ -2,11 +2,8 @@ import { Injectable, Logger } from "@nestjs/common";
 import { FileSystemLoader } from "./loaders/file-system.loader";
 import { MetadataBuilder } from "./processors/metadata.builder";
 import { Chunker } from "./processors/chunker";
-import { DocumentChunk } from "../models/document-chunk";
 import { EmbeddingProvider } from "../providers/embeddings/embedding.provider";
 import { VectorStore } from "../providers/vectorstore/vector-store";
-import * as path from "path";
-import { MemoryVectorStore } from "../providers/vectorstore/memory.store";
 
 /**
  * [인제션 오케스트레이터 서비스]

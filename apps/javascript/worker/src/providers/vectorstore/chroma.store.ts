@@ -3,6 +3,7 @@ import { ChromaClient, Collection } from 'chromadb';
 import { DocumentChunk } from "../../models/document-chunk";
 import { SearchResult, VectorStore } from './vector-store';
 import { IngestionConfig } from '../../config/ingestion.config';
+import { traceable } from 'langsmith/traceable';
 
 /**
  * [ChromaDB 벡터 저장소 구현체]
@@ -44,44 +45,54 @@ export class ChromaVectorStore extends VectorStore implements OnModuleInit {
     /**
      * 단일 청크 저장
      */
-    async storeChunk(chunk: DocumentChunk): Promise<void> {
-        if (!chunk.metadata.embedding) return;
+    storeChunk = traceable(
+        async (
+            chunk: DocumentChunk
+        ): Promise<void> => {
+            if (!chunk.metadata.embedding) return;
 
-        const { embedding, permission, ...rest } = chunk.metadata;
-        await this.collection.upsert({
-            ids: [chunk.id],
-            embeddings: [chunk.metadata.embedding],
-            metadatas: [{
-                ...rest,
-                permission: permission.join(','),
-            } as any],
-            documents: [chunk.text]
-        });
-    }
+            const { embedding, permission, ...rest } = chunk.metadata;
+            await this.collection.upsert({
+                ids: [chunk.id],
+                embeddings: [chunk.metadata.embedding],
+                metadatas: [{
+                    ...rest,
+                    permission: permission.join(','),
+                } as any],
+                documents: [chunk.text]
+            });
+        },
+        { name: "chroma-store" }
+    )
 
     /**
      * 대량 청크 일괄 저장 (Batching - 실무 필수)
      */
-    async storeChunks(chunks: DocumentChunk[]): Promise<void> {
-        const validChunks = chunks.filter(c => c.metadata.embedding);
-        if (validChunks.length === 0) return;
+    storeChunks = traceable(
+        async (
+            chunks: DocumentChunk[]
+        ): Promise<void> => {
+            const validChunks = chunks.filter(c => c.metadata.embedding);
+            if (validChunks.length === 0) return;
 
-        await this.collection.upsert({
-            ids: validChunks.map(c => c.id),
-            embeddings: validChunks.map(c => c.metadata.embedding!),
-            metadatas: validChunks.map(c => {
-                // [실무 팁] ChromaDB 메타데이터는 객체/배열 등을 저장할 수 없습니다.
-                // 따라서 복잡한 데이터는 제거하거나 문자열로 변환해야 합니다.
-                const { embedding, permission, ...rest } = c.metadata;
-                return {
-                    ...rest,
-                    permission: permission.join(','), // 배열을 문자열로 변환
-                } as any;
-            }),
-            documents: validChunks.map(c => c.text)
-        });
-        this.logger.log(`Stored ${validChunks.length} chunks to ChromaDB.`);
-    }
+            await this.collection.upsert({
+                ids: validChunks.map(c => c.id),
+                embeddings: validChunks.map(c => c.metadata.embedding!),
+                metadatas: validChunks.map(c => {
+                    // [실무 팁] ChromaDB 메타데이터는 객체/배열 등을 저장할 수 없습니다.
+                    // 따라서 복잡한 데이터는 제거하거나 문자열로 변환해야 합니다.
+                    const { embedding, permission, ...rest } = c.metadata;
+                    return {
+                        ...rest,
+                        permission: permission.join(','), // 배열을 문자열로 변환
+                    } as any;
+                }),
+                documents: validChunks.map(c => c.text)
+            });
+            this.logger.log(`Stored ${validChunks.length} chunks to ChromaDB.`);
+        },
+        { name: "chroma-store" }
+    )
 
     /**
      * 유사도 검색
