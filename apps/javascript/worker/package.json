@@ -1,0 +1,55 @@
+{
+  "name": "worker",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "build": "tsc",
+    "start": "ts-node src/main.ts",
+    "ingest": "ts-node src/main.ts ingest -d ../../../docs",
+    "chat": "ts-node src/main.ts chat -q",
+    "test": "jest",
+    "test:watch": "jest --watchAll",
+    "test:cov": "jest --coverage"
+  },
+  "jest": {
+    "moduleFileExtensions": [
+      "js",
+      "json",
+      "ts"
+    ],
+    "rootDir": "src",
+    "testRegex": ".*\\.spec\\.ts$",
+    "transform": {
+      "^.+\\.(t|j)s$": "ts-jest"
+    },
+    "collectCoverageFrom": [
+      "**/*.(t|j)s"
+    ],
+    "coverageDirectory": "../coverage",
+    "testEnvironment": "node"
+  },
+  "dependencies": {
+    "@chroma-core/default-embed": "^0.1.9",
+    "@nestjs/common": "^10.0.0",
+    "@nestjs/config": "^4.0.2",
+    "@nestjs/core": "^10.0.0",
+    "chromadb": "^3.2.0",
+    "glob": "^13.0.0",
+    "gray-matter": "^4.0.3",
+    "nest-commander": "^3.20.1",
+    "openai": "^6.15.0",
+    "reflect-metadata": "^0.1.13",
+    "rxjs": "^7.8.1",
+    "zod": "^4.3.5"
+  },
+  "devDependencies": {
+    "@nestjs/testing": "^10.0.0",
+    "@types/inquirer": "^8.2.12",
+    "@types/jest": "^30.0.0",
+    "@types/node": "^20.0.0",
+    "jest": "^30.2.0",
+    "ts-jest": "^29.4.6",
+    "ts-node": "^10.9.1",
+    "typescript": "^5.0.0"
+  }
+}

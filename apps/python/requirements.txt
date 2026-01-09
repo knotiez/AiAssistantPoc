@@ -1,0 +1,18 @@
+# AI & RAG Core
+langchain>=0.3.27
+langchain-openai>=0.3.27
+langchain-chroma>=0.3.27
+langgraph>=0.6.6
+
+# Configuration & Security
+pydantic-settings>=2.0.0
+python-dotenv>=1.1.1
+
+# CLI & UX
+typer[all]>=0.12.0
+rich>=13.5.0
+
+# Utils
+
+# Jupyter Notebook Support
+ipykernel>=6.30.1
