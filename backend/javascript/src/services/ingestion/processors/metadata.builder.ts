@@ -15,7 +15,7 @@ export class MetadataBuilder {
         private readonly aiProvider: AiMetadataProvider,
     ) { }
 
-    async build(filePath: string, rawText: string): Promise<Omit<ChunkMetadata, 'chunkIndex' | 'sectionTitle'>> {
+    async build(filePath: string, rawText: string, filename?: string): Promise<Omit<ChunkMetadata, 'chunkIndex' | 'sectionTitle'>> {
         const strategy = this.config.metadataStrategy.toUpperCase();
         let provider: MetadataProvider;
 
@@ -29,6 +29,6 @@ export class MetadataBuilder {
             throw new Error(`Invalid metadata strategy: ${strategy}`);
         }
 
-        return provider.extract(filePath, rawText);
+        return provider.extract(filePath, rawText, filename);
     }
 }

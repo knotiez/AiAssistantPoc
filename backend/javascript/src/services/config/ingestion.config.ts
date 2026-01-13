@@ -52,7 +52,7 @@ export class IngestionConfig {
 
     // -- 메타데이터 추출 방식( OPENAI_BASED | RULE_BASED )
     get metadataStrategy(): string {
-        return this.configService.get<string>('METADATA_STRATEGY') || 'RULE';
+        return this.configService.get<string>('METADATA_STRATEGY') || 'RULE_BASED';
     }
 
     get metadataAiModel(): string {

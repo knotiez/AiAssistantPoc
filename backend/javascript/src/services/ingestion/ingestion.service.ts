@@ -79,7 +79,7 @@ export class IngestionService {
 
         try {
             // 1. 메타데이터 생성 (AI 분석 포함)
-            const meta = await this.metadataBuilder.build(filePath, content);
+            const meta = await this.metadataBuilder.build(filePath, content, filename);
             this.logger.log(`Step 1: Metadata built for ${filename}`);
 
             // 2. 청킹 (의미 기반 텍스트 분할)

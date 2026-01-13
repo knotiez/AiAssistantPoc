@@ -16,17 +16,19 @@ export class RuleMetadataProvider extends MetadataProvider {
         super();
     }
 
-    extract(filePath: string, rawText: string): Omit<ChunkMetadata, 'chunkIndex' | 'sectionTitle'> {
-        const fileName = path.basename(filePath);
-        const title = fileName.replace(/\.md$/, '');
+    extract(filePath: string, rawText: string, filename?: string): Omit<ChunkMetadata, 'chunkIndex' | 'sectionTitle'> {
+        const leafName = filename || path.basename(filePath);
+        const title = leafName.replace(/\.md$/, '');
 
         // 1. 폴더 경로 기반 타입 분류 (Runbook, ADR 등)
-        const docType = this.classifier.classify(filePath);
+        // filename이 제공되면 filename도 분류에 활용 (단, filePath가 uploads인 경우에만 유용)
+        const classificationPath = filename ? `/manual/${filename}` : filePath;
+        const docType = this.classifier.classify(classificationPath);
 
         // 2. 파일 정보 기반 수정일 및 버전 결정
         const stats = fs.statSync(filePath);
         const updatedAt = stats.mtime.toISOString().split('T')[0];
-        const version: DocVersion = fileName.includes('_old') ? 'old' : 'current';
+        const version: DocVersion = leafName.includes('_old') ? 'old' : 'current';
 
         // 3. 타입에 따른 권한 매핑
         const permission = this.mapPermission(docType);
