@@ -26,7 +26,7 @@ export class EmbeddingBuilder {
     async embed(chunks: DocumentChunk[]): Promise<DocumentChunk[]> {
         // 현재는 구현체가 OpenAI 하나뿐이지만, 구조 확장을 위해 분기를 태웁니다.
         // (필요 시 Config에 EMBEDDING_STRATEGY 등을 추가하여 분기 가능)
-        const strategy = "OPENAI"; // 기본값
+        const strategy = this.config.embeddingStrategy.toUpperCase(); // 기본값
         let provider: EmbeddingProvider;
 
         if (strategy === "OPENAI") {

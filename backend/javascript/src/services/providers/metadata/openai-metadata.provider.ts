@@ -25,9 +25,12 @@ export class AiMetadataProvider extends MetadataProvider {
     extract = traceable(
         async (
             filePath: string,
-            rawText: string
+            rawText: string,
+            filename?: string
         ): Promise<Omit<ChunkMetadata, 'chunkIndex' | 'sectionTitle'>> => {
-            this.logger.log(`[AI Metadata] Analyzing content for: ${path.basename(filePath)}`);
+            const leafName = filename || path.basename(filePath);
+            const titleFromPath = leafName.replace(/\.md$/, '');
+            this.logger.log(`[AI Metadata] Analyzing content for: ${leafName}`);
 
             try {
                 const response = await this.client.chat.completions.create({
@@ -53,7 +56,7 @@ export class AiMetadataProvider extends MetadataProvider {
                 const aiData = JSON.parse(message.content) as AiDocumentMetadata;
 
                 return {
-                    title: aiData.title ?? path.basename(filePath, '.md'),
+                    title: aiData.title ?? titleFromPath,
                     docType: aiData.docType,
                     permission: aiData.permission,
                     summary: aiData.summary,
@@ -66,7 +69,7 @@ export class AiMetadataProvider extends MetadataProvider {
                 this.logger.error(`AI Metadata extraction failed: ${error.message}`);
                 // 실패 시 기본값 반환
                 return {
-                    title: path.basename(filePath, '.md'),
+                    title: titleFromPath,
                     docType: 'manual',
                     permission: ['USER'],
                     version: 'current',

@@ -22,8 +22,9 @@ export class DocTypeClassifier {
         if (p.includes('/api/')) return 'api';
         if (p.includes('/policy/')) return 'policy';
         if (p.includes('/ingestion/')) return 'ingestion';
+        if (p.includes('/manual/')) return 'manual';
 
-        // 분류할 수 없는 경우 에러를 던지거나 기본값을 줄 수 있습니다.
-        throw new Error(`Unknown doc type for path: ${filePath}. Please check policy.`);
+        // 분류할 수 없는 경우 기본값을 반환합니다.
+        return 'manual';
     }
 }

@@ -10,6 +10,7 @@ export abstract class MetadataProvider {
      */
     abstract extract(
         filePath: string,
-        rawText: string
+        rawText: string,
+        filename?: string
     ): Omit<ChunkMetadata, 'chunkIndex' | 'sectionTitle'> | Promise<Omit<ChunkMetadata, 'chunkIndex' | 'sectionTitle'>>;
 }

@@ -5,10 +5,15 @@ import { FileSystemLoader } from './loaders/file-system.loader';
 import { MetadataBuilder } from './processors/metadata.builder';
 import { Chunker } from './processors/chunker';
 import { IngestionConfig } from '../config/ingestion.config';
-import { EmbeddingProvider } from '../providers/embeddings/embedding.provider';
+import { EmbeddingBuilder } from './processors/embedding.builder';
+import { OpenAIEmbeddingProvider } from '../providers/embeddings/openai-embedding.provider';
 import { FakeEmbeddingProvider } from '../providers/embeddings/fake-embedding.provider';
+import { RuleMetadataProvider } from '../providers/metadata/rule-metadata.provider';
+import { AiMetadataProvider } from '../providers/metadata/openai-metadata.provider';
 import { VectorStore } from '../providers/vectorstore/vector-store';
+import { VectorStoreManager } from '../providers/vectorstore/vector-store-manager';
 import { MemoryVectorStore } from '../providers/vectorstore/memory.store';
+import { ChromaVectorStore } from '../providers/vectorstore/chroma.store';
 import { DocTypeClassifier } from './processors/doc-type.classifier';
 import * as path from 'path';
 
@@ -27,15 +32,20 @@ describe('IngestionService (e2e)', () => {
                 FileSystemLoader,
                 DocTypeClassifier,
                 MetadataBuilder,
+                RuleMetadataProvider,
+                AiMetadataProvider,
                 Chunker,
+                EmbeddingBuilder,
+                { provide: OpenAIEmbeddingProvider, useClass: FakeEmbeddingProvider },
                 IngestionConfig,
-                { provide: EmbeddingProvider, useClass: FakeEmbeddingProvider },
-                { provide: VectorStore, useClass: MemoryVectorStore },
+                VectorStoreManager,
+                MemoryVectorStore,
+                { provide: ChromaVectorStore, useValue: {} }, // Mock Chroma
             ],
         }).compile();
 
         service = module.get<IngestionService>(IngestionService);
-        vectorStore = module.get<VectorStore>(VectorStore);
+        vectorStore = module.get<VectorStoreManager>(VectorStoreManager);
     });
 
     it('should process docs end‑to‑end', async () => {
