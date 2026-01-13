@@ -1,0 +1,25 @@
+.fab {
+    position: fixed;
+    bottom: var(--spacing-xl);
+    right: var(--spacing-xl);
+    width: 56px;
+    height: 56px;
+    background: var(--text-primary);
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: var(--shadow-lg);
+    transition: all 0.2s;
+    z-index: 100;
+}
+
+.fab:hover {
+    transform: scale(1.05);
+    box-shadow: 0 12px 20px rgba(0, 0, 0, 0.15);
+}
+
+.fab:active {
+    transform: scale(0.95);
+}
