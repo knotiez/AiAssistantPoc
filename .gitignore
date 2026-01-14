@@ -16,6 +16,18 @@ build/
 out/
 **/out/
 
+# --- Java / Gradle Build Artifacts ---
+.gradle/
+**/.gradle/
+target/
+**/target/
+*.jar
+*.war
+*.ear
+*.class
+gradle-*/
+gradle.zip
+
 # --- Environment & Secrets ---
 .env
 .env.local
@@ -51,3 +63,4 @@ Thumbs.db
 !/backend/javascript/uploads/.gitkeep
 vector-store.json
 **/vector-store.json
+
