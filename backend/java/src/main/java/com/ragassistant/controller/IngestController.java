@@ -7,11 +7,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.List;
 import java.util.Map;
 
 @Slf4j
@@ -22,37 +22,96 @@ public class IngestController {
     private final IngestionService ingestionService;
 
     @PostMapping
-    public ResponseEntity<?> uploadFile(@RequestParam("file") MultipartFile file) {
-        if (file.isEmpty()) {
-            return ResponseEntity.badRequest().body("File is empty");
+    public ResponseEntity<?> uploadFiles(@RequestParam("files") MultipartFile[] files) {
+        if (files == null || files.length == 0) {
+            return ResponseEntity.badRequest().body(Map.of(
+                    "success", false,
+                    "message", "No files provided"));
         }
 
-        try {
-            // Save temporary file (mimicking disk storage in NestJS)
-            String tempDir = System.getProperty("java.io.tmpdir");
-            Path tempPath = Paths.get(tempDir, file.getOriginalFilename());
-            file.transferTo(tempPath.toFile());
+        int totalFiles = files.length;
+        int filesProcessed = 0;
+        java.util.List<Map<String, String>> failedFiles = new java.util.ArrayList<>();
 
-            String content = new String(file.getBytes(), StandardCharsets.UTF_8);
+        for (MultipartFile file : files) {
+            if (file.isEmpty()) {
+                failedFiles.add(Map.of(
+                        "filename", file.getOriginalFilename(),
+                        "error", "File is empty"));
+                continue;
+            }
 
-            IngestionService.ProcessResult result = ingestionService.processFile(
-                    file.getOriginalFilename(),
-                    content,
-                    tempPath.toAbsolutePath().toString());
+            try {
+                // Read file content FIRST (before transferTo which exhausts the stream)
+                String content = new String(file.getBytes(), StandardCharsets.UTF_8);
 
-            // Clean up temp file
-            Files.deleteIfExists(tempPath);
+                // Save temporary file - create parent directories if needed
+                String tempDir = System.getProperty("java.io.tmpdir");
+                Path tempPath = Paths.get(tempDir, file.getOriginalFilename());
 
-            return ResponseEntity.ok(result);
-        } catch (IOException e) {
-            log.error("File upload error: {}", e.getMessage());
-            return ResponseEntity.internalServerError().body("Error: " + e.getMessage());
+                // Create parent directories if they don't exist
+                if (tempPath.getParent() != null) {
+                    Files.createDirectories(tempPath.getParent());
+                }
+
+                file.transferTo(tempPath.toFile());
+
+                IngestionService.ProcessResult result = ingestionService.processFile(
+                        file.getOriginalFilename(),
+                        content,
+                        tempPath.toAbsolutePath().toString());
+
+                // Clean up temp file
+                Files.deleteIfExists(tempPath);
+
+                filesProcessed++;
+                log.info("Successfully processed file: {}", file.getOriginalFilename());
+            } catch (Exception e) {
+                log.error("File processing error for {}: {}", file.getOriginalFilename(), e.getMessage());
+                failedFiles.add(Map.of(
+                        "filename", file.getOriginalFilename(),
+                        "error", e.getMessage()));
+            }
         }
+
+        boolean allSuccess = filesProcessed == totalFiles;
+        return ResponseEntity.ok(Map.of(
+                "success", allSuccess,
+                "message", allSuccess
+                        ? "All files processed successfully"
+                        : String.format("Processed %d/%d files", filesProcessed, totalFiles),
+                "totalFiles", totalFiles,
+                "filesProcessed", filesProcessed,
+                "failedFiles", failedFiles));
     }
 
     @GetMapping("/sources")
     public ResponseEntity<?> getSources() {
-        // To be implemented via vectorStore.getStoredFiles()
-        return ResponseEntity.ok(Map.of("message", "Not implemented yet"));
+        try {
+            List<com.ragassistant.model.SourceDocument> sources = ingestionService.getAllSources();
+            return ResponseEntity.ok(Map.of(
+                    "success", true,
+                    "sources", sources));
+        } catch (Exception e) {
+            log.error("Failed to fetch sources: {}", e.getMessage());
+            return ResponseEntity.internalServerError().body(Map.of(
+                    "success", false,
+                    "message", "Failed to fetch sources: " + e.getMessage()));
+        }
+    }
+
+    @DeleteMapping("/DeleteAll")
+    public ResponseEntity<?> deleteAllSources() {
+        try {
+            ingestionService.deleteAllSources();
+            return ResponseEntity.ok(Map.of(
+                    "success", true,
+                    "message", "All sources deleted successfully"));
+        } catch (Exception e) {
+            log.error("Failed to delete sources: {}", e.getMessage());
+            return ResponseEntity.internalServerError().body(Map.of(
+                    "success", false,
+                    "message", "Failed to delete sources: " + e.getMessage()));
+        }
     }
 }

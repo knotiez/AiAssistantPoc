@@ -1,10 +1,18 @@
 package com.ragassistant.config;
 
-import lombok.Data;
+import com.ragassistant.provider.metadata.LMStudioMetadataProvider;
+import com.ragassistant.provider.metadata.MetadataProvider;
+import com.ragassistant.provider.metadata.OpenAiMetadataProvider;
+import com.ragassistant.provider.metadata.RuleBasedMetadataProvider;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 
-@Component
+@Slf4j
+@Configuration
 public class IngestionConfig {
     @Value("${rag.openai.api-key}")
     private String openAiApiKey;
@@ -56,6 +64,9 @@ public class IngestionConfig {
 
     @Value("${rag.chat.system-prompt:You are a helpful assistant.}")
     private String chatSystemPrompt;
+
+    @Value("${METADATA_SYSTEM_PROMPT:You are a professional librarian. Extract metadata from the document in JSON format.}")
+    private String metadataSystemPrompt;
 
     // Getters
     public String getOpenAiApiKey() {
@@ -124,5 +135,35 @@ public class IngestionConfig {
 
     public String getChatSystemPrompt() {
         return chatSystemPrompt;
+    }
+
+    public String getMetadataSystemPrompt() {
+        return metadataSystemPrompt;
+    }
+
+    /**
+     * 메타데이터 프로바이더 팩토리
+     * METADATA_STRATEGY 환경 변수에 따라 적절한 프로바이더를 반환합니다.
+     */
+    @Bean
+    @Primary
+    public MetadataProvider metadataProvider(
+            @Autowired(required = false) RuleBasedMetadataProvider ruleBasedProvider,
+            @Autowired(required = false) OpenAiMetadataProvider openAiProvider,
+            @Autowired(required = false) LMStudioMetadataProvider lmStudioProvider) {
+        log.info("Initializing MetadataProvider with strategy: {}", metadataStrategy);
+
+        switch (metadataStrategy.toUpperCase()) {
+            case "OPENAI_BASED":
+                log.info("Using OpenAI Metadata Provider with model: {}", metadataAiModel);
+                return openAiProvider;
+            case "LMSTUDIO_BASED":
+                log.info("Using LM Studio Metadata Provider with model: {}", metadataAiModel);
+                return lmStudioProvider;
+            case "RULE_BASED":
+            default:
+                log.info("Using Rule-Based Metadata Provider");
+                return ruleBasedProvider;
+        }
     }
 }
