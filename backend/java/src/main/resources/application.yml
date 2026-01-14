@@ -1,0 +1,41 @@
+spring:
+  datasource:
+    url: jdbc:sqlite:rag_assistant.db
+    driver-class-name: org.xerial.sqlite.JDBC
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.community.dialect.SQLiteDialect
+    show-sql: true
+
+server:
+  port: 8080
+
+# Environment variables will be mapped here (using the spring-dotenv library if configured)
+rag:
+  openai:
+    api-key: ${OPENAI_API_KEY:}
+  unstructured:
+    api-key: ${UNSTRUCTURED_API_KEY:}
+    api-url: ${UNSTRUCTURED_API_URL:https://api.unstructuredapp.io}
+  chroma:
+    url: ${CHROMA_URL:http://localhost:8000}
+    collection-name: ${CHROMA_COLLECTION_NAME:rag_collection}
+  lm-studio:
+    api-url: ${LMSTUDIO_API_URL:http://localhost:1234/v1}
+  embedding:
+    strategy: ${EMBEDDING_STRATEGY:OPENAI}
+    model: ${EMBEDDING_MODEL:text-embedding-3-small}
+  chunking:
+    strategy: ${CHUNKING_STRATEGY:MARKDOWN}
+  metadata:
+    strategy: ${METADATA_STRATEGY:RULE_BASED}
+    ai-model: ${METADATA_AI_MODEL:gpt-4o-mini}
+  chat:
+    model: ${CHAT_AI_MODEL:gpt-4o-mini}
+    temperature: ${CHAT_TEMPERATURE:0}
+    max-context-length: ${MAX_CONTEXT_LENGTH:2000}
+    retrieval-count: ${CHAT_RETRIEVAL_COUNT:5}
+    similarity-threshold: ${CHAT_SIMILARITY_THRESHOLD:0.5}
