@@ -3,7 +3,7 @@ package com.ragassistant.service;
 import com.ragassistant.model.DocumentChunk;
 import com.ragassistant.provider.chunking.MarkdownHeaderChunker;
 import com.ragassistant.provider.embedding.EmbeddingBuilder;
-import com.ragassistant.provider.metadata.RuleBasedMetadataProvider;
+import com.ragassistant.provider.metadata.MetadataProvider;
 import com.ragassistant.provider.vectorstore.ChromaVectorStore;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -18,7 +18,7 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class IngestionService {
-    private final RuleBasedMetadataProvider metadataProvider;
+    private final MetadataProvider metadataProvider;
     private final MarkdownHeaderChunker chunker;
     private final EmbeddingBuilder embeddingBuilder;
     private final ChromaVectorStore vectorStore;
@@ -182,5 +182,15 @@ public class IngestionService {
                 return r;
             }
         }
+    }
+
+    public List<SourceDocument> getAllSources() {
+        return sourceRepo.findAll();
+    }
+
+    public void deleteAllSources() {
+        sourceRepo.deleteAll();
+        // TODO: Also delete from vector store if needed
+        log.info("Deleted all source documents from database");
     }
 }
