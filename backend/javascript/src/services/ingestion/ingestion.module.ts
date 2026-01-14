@@ -19,6 +19,8 @@ import { RuleMetadataProvider } from "../providers/metadata/rule-metadata.provid
 import { AiMetadataProvider } from "../providers/metadata/openai-metadata.provider";
 import { EmbeddingBuilder } from "./processors/embedding.builder";
 import { VectorStoreManager } from "../providers/vectorstore/vector-store-manager";
+import { LMStudioMetadataProvider } from "../providers/metadata/lmstudio-metadata.provider";
+import { LMStudioEmbeddingProvider } from "../providers/embeddings/lmstudio-embedding.provider";
 
 
 @Module({
@@ -30,18 +32,28 @@ import { VectorStoreManager } from "../providers/vectorstore/vector-store-manage
         IngestionService,
         FileSystemLoader,
         DocTypeClassifier,
+
+        // Metadata Providers
         MetadataBuilder,
+        RuleMetadataProvider,
+        AiMetadataProvider,
+        LMStudioMetadataProvider,
+
+        // Chunkers
         Chunker,
         MarkdownHeaderChunker,
         UnstructuredChunkingProvider,
+
         IngestionConfig,
         SearchService,
         ChatService,
         MemoryVectorStore,
         ChromaVectorStore,
-        RuleMetadataProvider,
-        AiMetadataProvider,
+
+        // Embedding Providers
         OpenAIEmbeddingProvider,
+        LMStudioEmbeddingProvider,
+
         // Managed Orchestrators
         EmbeddingBuilder,
         VectorStoreManager,

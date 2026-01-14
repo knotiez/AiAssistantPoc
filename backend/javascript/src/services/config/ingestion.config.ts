@@ -15,14 +15,6 @@ export class IngestionConfig {
         return this.configService.get<string>('OPENAI_API_KEY') || '';
     }
 
-    get embeddingStrategy(): string {
-        return this.configService.get<string>('EMBEDDING_STRATEGY') || 'OPENAI';
-    }
-
-    get embeddingModel(): string {
-        return this.configService.get<string>('EMBEDDING_MODEL') || 'text-embedding-ada-002';
-    }
-
     get unstructuredApiKey(): string {
         return this.configService.get<string>('UNSTRUCTURED_API_KEY') || '';
     }
@@ -31,6 +23,14 @@ export class IngestionConfig {
         return this.configService.get<string>('UNSTRUCTURED_API_URL') || 'https://api.unstructuredapp.io';
     }
 
+    // embedding 방식 선택( OPENAI | LMSTUDIO )
+    get embeddingStrategy(): string {
+        return this.configService.get<string>('EMBEDDING_STRATEGY') || 'OPENAI';
+    }
+
+    get embeddingModel(): string {
+        return this.configService.get<string>('EMBEDDING_MODEL') || 'text-embedding-ada-002';
+    }
 
     // -- 청킹 방식선택( MARKDOWN | UNSTRUCTURED )
     get chunkingStrategy(): string {
@@ -62,6 +62,15 @@ export class IngestionConfig {
     // -- 메타데이터 추출용 AI 프롬프트 설정
     get metadataSystemPrompt(): string {
         return this.configService.get<string>('METADATA_SYSTEM_PROMPT') || 'Extract metadata in JSON format.';
+    }
+
+    // LM Studio API URL (기본값 설정)
+    get lmStudioApiUrl(): string {
+        return this.configService.get<string>('LMSTUDIO_API_URL') || 'http://localhost:1234/v1';
+    }
+    // LM Studio에서 사용하는 모델명
+    get lmStudioModelName(): string {
+        return this.configService.get<string>('LMSTUDIO_MODEL_NAME') || 'qwen2.5-7b-instruct-1m';
     }
 
     // -- 채팅(RAG)용 모델 및 파라미터

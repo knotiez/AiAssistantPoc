@@ -55,7 +55,7 @@ export class ChatService {
 
         const systemPrompt = searchResults.length > 0
             ? `${this.config.chatSystemPrompt}\n\n[지식]\n${context}`
-            : `${this.config.chatSystemPrompt}\n\n(참고할 지식이 없습니다. 일반적인 답변을 하세요.)`;
+            : `${this.config.chatSystemPrompt}\n\n(참고할 지식이 없습니다. 해당 내용은 없다고 대답하세요.)`;
 
         // 4. AI 답변 생성 (RAG)
         const response = await this.openai.chat.completions.create({

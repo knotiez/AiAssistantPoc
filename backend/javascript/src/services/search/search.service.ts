@@ -29,12 +29,19 @@ export class SearchService {
         const dummyChunk: any = { text: query, metadata: {} };
         const [embeddedQuery] = await this.embeddingBuilder.embed([dummyChunk]);
 
+        const vector = embeddedQuery.metadata.embedding;
+        if (!vector) {
+            this.logger.error("[Search] Query embedding failed! Vector is null.");
+            return [];
+        }
+
         // 2. 변환된 숫자 좌표를 가지고 벡터 저장소에서 검색합니다.
         const results = await this.vectorStore.search(
-            embeddedQuery.metadata.embedding!,
+            vector,
             topK
         );
 
+        this.logger.log(`[Search] Found ${results.length} results. Top score: ${results[0]?.score ?? 'N/A'}.`);
         return results;
     }
 }

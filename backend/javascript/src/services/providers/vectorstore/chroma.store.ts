@@ -105,17 +105,22 @@ export class ChromaVectorStore extends VectorStore implements OnModuleInit {
 
         const results: SearchResult[] = [];
         // ChromaDB 검색 결과를 우리 프로젝트의 SearchResult 형식으로 변환
-        if (response.ids.length > 0) {
+        if (response.ids.length > 0 && response.ids[0].length > 0) {
             for (let i = 0; i < response.ids[0].length; i++) {
+                const distance = (response.distances as number[][])?.[0][i] ?? 0;
+                this.logger.debug(`[Chroma] Hit ${i} - Distance: ${distance}, ID: ${response.ids[0][i]}`);
+
                 results.push({
                     chunk: {
                         id: response.ids[0][i],
                         text: response.documents[0][i] || '',
                         metadata: response.metadatas[0][i] as any,
                     },
-                    score: 1 - ((response.distances as number[][])?.[0][i] ?? 0)
+                    score: 1 - distance
                 });
             }
+        } else {
+            this.logger.warn(`[Chroma] No results found in Chroma query.`);
         }
         return results;
     }
@@ -178,19 +183,30 @@ export class ChromaVectorStore extends VectorStore implements OnModuleInit {
      * 모든 데이터 삭제
      */
     async clearAll(): Promise<void> {
-        try {
-            this.logger.log('Clearing all data from ChromaDB collection...');
-            // ChromaDB의 모든 문서를 삭제하려면 where 조건 없이 delete 호출
-            const response = await this.collection.get();
-            if (response.ids.length > 0) {
-                await this.collection.delete({ ids: response.ids });
-                this.logger.log(`Successfully cleared ${response.ids.length} documents from ChromaDB`);
-            } else {
-                this.logger.log('ChromaDB collection is already empty');
+
+        // ChromaDB의 모든 문서를 삭제하려면 where 조건 없이 delete 호출
+        const response = await this.collection.get();
+        if (response.ids.length > 0) {
+            try {
+                this.logger.log(`Resetting collection: ${this.config.chromaCollectionName}`);
+
+                // 단순히 문서를 지우는 것이 아니라 컬렉션 자체를 삭제해야 '차원 설정'이 초기화됩니다.
+                await this.client.deleteCollection({ name: this.config.chromaCollectionName });
+
+                // 삭제 후 다시 생성
+                this.collection = await this.client.createCollection({
+                    name: this.config.chromaCollectionName,
+                });
+
+                this.logger.log('Collection has been reset with a new dimension.');
+            } catch (error: any) {
+                this.logger.error(`Failed to reset ChromaDB: ${error.message}`);
+                throw error;
             }
-        } catch (error: any) {
-            this.logger.error(`Failed to clear ChromaDB: ${error.message}`);
-            throw error;
+        }
+        else {
+            this.logger.log('ChromaDB collection is already empty');
         }
     }
 }
+

@@ -3,6 +3,7 @@ import { IngestionConfig } from '../../config/ingestion.config';
 import { DocumentChunk } from "../../models/document-chunk";
 import { EmbeddingProvider } from '../../providers/embeddings/embedding.provider';
 import { OpenAIEmbeddingProvider } from '../../providers/embeddings/openai-embedding.provider';
+import { LMStudioEmbeddingProvider } from 'src/services/providers/embeddings/lmstudio-embedding.provider';
 
 /**
  * [임베딩 빌더 - 오케스트레이터]
@@ -16,7 +17,8 @@ export class EmbeddingBuilder {
 
     constructor(
         private readonly config: IngestionConfig,
-        private readonly openAiProvider: OpenAIEmbeddingProvider,
+        private readonly openAiEmbeddingProvider: OpenAIEmbeddingProvider,
+        private readonly lmStudioEmbeddingProvider: LMStudioEmbeddingProvider,
         // 추후에 GoogleEmbeddingProvider, localEmbeddingProvider 등을 여기에 추가
     ) { }
 
@@ -30,10 +32,13 @@ export class EmbeddingBuilder {
         let provider: EmbeddingProvider;
 
         if (strategy === "OPENAI") {
-            provider = this.openAiProvider;
-        } else {
+            provider = this.openAiEmbeddingProvider;
+        } else if (strategy === "LMSTUDIO") {
+            provider = this.lmStudioEmbeddingProvider
+        }
+        else {
             this.logger.warn(`No specific embedding strategy found. defaulting to OpenAI.`);
-            provider = this.openAiProvider;
+            provider = this.openAiEmbeddingProvider;
         }
 
         return provider.embed(chunks);
