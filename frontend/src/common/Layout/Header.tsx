@@ -1,5 +1,5 @@
 // Material Design 아이콘 임포트 (react-icons 라이브러리)
-import { MdBarChart, MdShare, MdSettings, MdAccountCircle } from 'react-icons/md';
+import { MdBarChart, MdShare, MdSettings, MdAccountCircle, MdAdminPanelSettings } from 'react-icons/md';
 // React Router의 NavLink 임포트 - 네비게이션 링크용
 import { NavLink } from 'react-router-dom';
 import './Header.css';
@@ -87,10 +87,15 @@ export const Header = () => {
                     <MdSettings size={20} />
                 </button>
 
-                {/* 사용자 프로필 버튼 */}
-                <button className="btn-icon user-profile" title="프로필">
+                {/* 사용자 관리 버튼 */}
+                <NavLink to="/manage-user" className="btn-icon" title="사용자 관리">
+                    <MdAdminPanelSettings size={24} />
+                </NavLink>
+
+                {/* 로그인 버튼 */}
+                <NavLink to="/login" className="btn-icon user-profile" title="로그인">
                     <MdAccountCircle size={32} />
-                </button>
+                </NavLink>
             </div>
         </header>
     );

@@ -11,6 +11,8 @@ import { Header } from './common/Layout/Header';
 import HomePage from './pages/home';
 import DocumentsPage from './pages/documents';
 import ChatPage from './pages/chat';
+import { LoginPage, SignupPage } from './pages/Login';
+import ManageUser from './pages/Manage';
 
 // 공통 컴포넌트
 import { FloatingActionButton } from './common/FloatingActionButton/FloatingActionButton';
@@ -36,6 +38,15 @@ function App() {
         <Routes>
           {/* 루트 경로(/)는 /home으로 리다이렉트 */}
           <Route path="/" element={<Navigate to="/home" replace />} />
+
+          {/* 로그인 페이지 */}
+          <Route path="/login" element={<LoginPage />} />
+
+          {/* 회원가입 페이지 */}
+          <Route path="/signup" element={<SignupPage />} />
+
+          {/* 사용자 관리 페이지 */}
+          <Route path="/manage-user" element={<ManageUser />} />
 
           {/* 홈 페이지 */}
           <Route path="/home" element={<HomePage />} />
