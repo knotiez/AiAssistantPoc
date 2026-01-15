@@ -67,16 +67,9 @@ export const RagFilesPanel = ({ refreshTrigger }: RagFilesPanelProps) => {
         }
     };
 
-    // 컴포넌트 마운트 시 RAG 소스 목록 로드
+    // 컴포넌트 마운트 시 및 refreshTrigger 변경 시 RAG 소스 목록 로드
     useEffect(() => {
         fetchRagSources();
-    }, []);
-
-    // refreshTrigger가 변경되면 목록 새로고침
-    useEffect(() => {
-        if (refreshTrigger !== undefined && refreshTrigger > 0) {
-            fetchRagSources();
-        }
     }, [refreshTrigger]);
 
     return (

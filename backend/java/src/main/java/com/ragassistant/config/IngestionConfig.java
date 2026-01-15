@@ -1,22 +1,11 @@
 package com.ragassistant.config;
 
-import com.ragassistant.provider.chunking.ChunkingProvider;
-import com.ragassistant.provider.chunking.MarkdownHeaderChunker;
-import com.ragassistant.provider.chunking.UnstructuredChunkingProvider;
-import com.ragassistant.provider.metadata.LMStudioMetadataProvider;
-import com.ragassistant.provider.metadata.MetadataProvider;
-import com.ragassistant.provider.metadata.OpenAiMetadataProvider;
-import com.ragassistant.provider.metadata.RuleBasedMetadataProvider;
-import com.ragassistant.provider.vectorstore.ChromaVectorStore;
-import com.ragassistant.provider.vectorstore.MemoryVectorStore;
-import com.ragassistant.provider.vectorstore.VectorStore;
-
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Primary;
+
+import jakarta.annotation.PostConstruct;
 
 @Slf4j
 @Configuration
@@ -24,35 +13,63 @@ public class IngestionConfig {
     @Value("${rag.openai.api-key}")
     private String openAiApiKey;
 
-    @Value("${rag.chroma.url}")
-    private String chromaUrl;
+    // METADATA
+    // =======================================================================
+    // 메타데이터 추출 방식: RULE_BASED | AI_BASED | LMSTUDIO_BASED |
+    @Value("${rag.metadata.strategy}")
+    private String metadataStrategy;
 
-    @Value("${rag.chroma.collection-name}")
-    private String chromaCollectionName;
+    // 메타 데이터 추출에 사용한 AI Model
+    @Value("${rag.metadata.ai-model}")
+    private String metadataAiModel;
 
+    // LM Studio API URL
     @Value("${rag.lm-studio.api-url}")
     private String lmStudioApiUrl;
 
-    @Value("${rag.embedding.strategy}")
-    private String embeddingStrategy;
+    // 메타 데이터 추출에 사용한 System Prompt
+    @Value("${rag.metadata.system-prompt}")
+    private String metadataSystemPrompt;
 
-    @Value("${rag.embedding.model}")
-    private String embeddingModel;
-
+    // CHUNKING
+    // =======================================================================
+    // 사용할 CHUNKING 방식: UNSTRUCTURED | MARKDOWN |
     @Value("${rag.chunking.strategy}")
     private String chunkingStrategy;
 
+    // UNSTRUCTURED api key
     @Value("${rag.unstructured.api-key:}")
     private String unstructuredApiKey;
 
+    // UNSTRUCTURED api url
     @Value("${rag.unstructured.api-url:http://localhost:8000}")
     private String unstructuredApiUrl;
 
-    @Value("${ingestion.metadata.strategy:RULE_BASED}")
-    private String metadataStrategy;
+    // Embedding
+    // =======================================================================
+    // 사용할 EMBEDDING 방식:OPENAI|LMSTUDIO|
+    @Value("${rag.embedding.strategy}")
+    private String embeddingStrategy;
 
-    @Value("${rag.metadata.ai-model}")
-    private String metadataAiModel;
+    // Embedding Model
+    @Value("${rag.embedding.model}")
+    private String embeddingModel;
+
+    // Vector DB 설정
+    // =======================================================================
+    // Vector DB 전략 선택: MEMORY | CHROMA |
+    @Value("${rag.vector-store.strategy:CHROMA}")
+    private String vectorStoreStrategy;
+
+    // Chroma DB Url
+    @Value("${rag.chroma.url}")
+    private String chromaUrl;
+
+    // Chroma Collection Name
+    @Value("${rag.chroma.collection-name}")
+    private String chromaCollectionName;
+
+    // CHAT =======================================================================
 
     @Value("${rag.chat.model}")
     private String chatAiModel;
@@ -71,9 +88,6 @@ public class IngestionConfig {
 
     @Value("${rag.chat.system-prompt:You are a helpful assistant.}")
     private String chatSystemPrompt;
-
-    @Value("${METADATA_SYSTEM_PROMPT:You are a professional librarian. Extract metadata from the document in JSON format.}")
-    private String metadataSystemPrompt;
 
     // Getters
     public String getOpenAiApiKey() {
@@ -148,60 +162,21 @@ public class IngestionConfig {
         return metadataSystemPrompt;
     }
 
-    /**
-     * 메타데이터 프로바이더 팩토리
-     * METADATA_STRATEGY 환경 변수에 따라 적절한 프로바이더를 반환합니다.
-     */
-    // --- Strategy Factories ---
-
-    @Bean
-    @Primary
-    public MetadataProvider metadataProvider(
-            @Autowired(required = false) RuleBasedMetadataProvider ruleBasedProvider,
-            @Autowired(required = false) OpenAiMetadataProvider openAiProvider,
-            @Autowired(required = false) LMStudioMetadataProvider lmStudioProvider) {
-        log.info("Initializing MetadataProvider with strategy: {}", metadataStrategy);
-
-        switch (metadataStrategy.toUpperCase()) {
-            case "OPENAI_BASED":
-                log.info("Using OpenAI Metadata Provider with model: {}", metadataAiModel);
-                return openAiProvider;
-            case "LMSTUDIO_BASED":
-                log.info("Using LM Studio Metadata Provider with model: {}", metadataAiModel);
-                return lmStudioProvider;
-            case "RULE_BASED":
-            default:
-                log.info("Using Rule-Based Metadata Provider");
-                return ruleBasedProvider;
-        }
+    public String getVectorStoreStrategy() {
+        return vectorStoreStrategy;
     }
 
-    @Value("${ingestion.vector-store.type:CHROMA}")
-    private String vectorStoreType;
-
-    @Bean
-    @Primary
-    public ChunkingProvider chunkingProvider(
-            @Autowired MarkdownHeaderChunker markdownChunker,
-            @Autowired UnstructuredChunkingProvider unstructuredChunker) {
-        log.info("Initializing ChunkingProvider with strategy: {}", chunkingStrategy);
-
-        if ("UNSTRUCTURED".equalsIgnoreCase(chunkingStrategy)) {
-            return unstructuredChunker;
-        }
-        return markdownChunker;
-    }
-
-    @Bean
-    @Primary
-    public VectorStore vectorStore(
-            @Autowired ChromaVectorStore chromaStore,
-            @Autowired MemoryVectorStore memoryStore) {
-        log.info("Initializing VectorStore with type: {}", vectorStoreType);
-
-        if ("MEMORY".equalsIgnoreCase(vectorStoreType)) {
-            return memoryStore;
-        }
-        return chromaStore;
+    // build 시 현재 설정된 config를 로깅
+    @PostConstruct
+    public void logConfiguration() {
+        log.info("=".repeat(80));
+        log.info("RAG Configuration");
+        log.info("=".repeat(80));
+        log.info("Metadata Strategy: {}", metadataStrategy);
+        log.info("Chunking Strategy: {}", chunkingStrategy);
+        log.info("Embedding Strategy: {}", embeddingStrategy);
+        log.info("Vector Store Strategy: {}", vectorStoreStrategy);
+        log.info("Chat AI Model: {}", chatAiModel);
+        log.info("=".repeat(80));
     }
 }
