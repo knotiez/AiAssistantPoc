@@ -1,0 +1,199 @@
+/* RagFilesPanel 전체 컨테이너 */
+.rag-files-panel {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    flex: 1;
+}
+
+.panel {
+    background: var(--surface);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-md);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.panel-header {
+    padding: var(--spacing-lg);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    min-height: 60px;
+}
+
+.panel-header h2 {
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.panel-header-actions {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+}
+
+/* 새로고침 버튼 */
+.btn-refresh {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    color: var(--text-secondary);
+    transition: all 0.2s;
+    background: transparent;
+}
+
+.btn-refresh:hover {
+    background: var(--surface-variant);
+    color: var(--text-primary);
+    transform: rotate(180deg);
+}
+
+/* 전체 삭제 버튼 */
+.btn-delete-all {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    color: var(--text-secondary);
+    transition: all 0.2s;
+    background: transparent;
+}
+
+.btn-delete-all:hover {
+    background: #fee;
+    color: #d32f2f;
+}
+
+.panel-body {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    min-height: 0;
+}
+
+/* RAG 파일 헤더 */
+.rag-files-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--spacing-md) var(--spacing-lg);
+    border-bottom: 1px solid var(--border);
+    background: var(--surface);
+    flex-shrink: 0;
+}
+
+.rag-files-title {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.file-count {
+    font-size: 11px;
+    color: var(--text-secondary);
+    background: var(--surface-variant);
+    padding: 2px 8px;
+    border-radius: 12px;
+}
+
+/* RAG 파일 컨텐츠 영역 */
+.rag-files-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding: var(--spacing-lg);
+    overflow-y: auto;
+    min-height: 0;
+}
+
+/* RAG 파일 목록 */
+.rag-files-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xs);
+}
+
+/* RAG 파일 아이템 */
+.rag-file-item {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: var(--spacing-sm);
+    background: var(--surface-variant);
+    border-radius: var(--radius-sm);
+    transition: background 0.2s;
+    min-width: 0;
+}
+
+.rag-file-item:hover {
+    background: #e8eaed;
+}
+
+.rag-file-main {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    min-width: 0;
+}
+
+.file-icon {
+    font-size: 16px;
+    flex-shrink: 0;
+}
+
+.rag-file-name {
+    flex: 1;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-primary);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.rag-chunk-count,
+.rag-updated-date {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    flex-shrink: 0;
+    font-size: 11px;
+    color: var(--text-tertiary);
+}
+
+/* 빈 상태 */
+.empty-state {
+    padding: var(--spacing-xl);
+    text-align: center;
+    color: var(--text-tertiary);
+    font-size: 13px;
+}
+
+/* 스크롤바 스타일링 */
+.rag-files-content::-webkit-scrollbar {
+    width: 6px;
+}
+
+.rag-files-content::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.rag-files-content::-webkit-scrollbar-thumb {
+    background: var(--border);
+    border-radius: 3px;
+}
+
+.rag-files-content::-webkit-scrollbar-thumb:hover {
+    background: var(--text-tertiary);
+}

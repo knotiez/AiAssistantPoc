@@ -1,0 +1,198 @@
+/* FileUploadPanel 전체 컨테이너 */
+.file-upload-panel {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    flex: 1;
+}
+
+.panel {
+    background: var(--surface);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-md);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.panel-header {
+    padding: var(--spacing-lg);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    min-height: 60px;
+}
+
+.panel-header h2 {
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.panel-header-actions {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+}
+
+/* 폴더 추가 버튼 */
+.btn-add-folder {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    padding: var(--spacing-sm) var(--spacing-md);
+    background: #dadce0;
+    color: var(--text-primary);
+    border-radius: var(--radius-md);
+    font-size: 13px;
+    font-weight: 500;
+    transition: background 0.2s;
+}
+
+.btn-add-folder:hover {
+    background: #c8cacd;
+}
+
+.panel-body {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    min-height: 0;
+}
+
+/* 선택된 파일 헤더 */
+.selected-files-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--spacing-md) var(--spacing-lg);
+    border-bottom: 1px solid var(--border);
+    background: var(--surface);
+    flex-shrink: 0;
+}
+
+.selected-files-title {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.file-count {
+    font-size: 11px;
+    color: var(--text-secondary);
+    background: var(--surface-variant);
+    padding: 2px 8px;
+    border-radius: 12px;
+}
+
+/* 선택된 파일 컨텐츠 영역 */
+.selected-files-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding: var(--spacing-lg);
+    overflow-y: auto;
+    min-height: 0;
+}
+
+/* 파일 목록 */
+.selected-files-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xs);
+}
+
+/* 파일 아이템 */
+.file-item {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    padding: var(--spacing-sm);
+    background: var(--surface-variant);
+    border-radius: var(--radius-sm);
+    transition: background 0.2s;
+    min-width: 0;
+}
+
+.file-item:hover {
+    background: #e8eaed;
+}
+
+.file-icon {
+    font-size: 16px;
+    flex-shrink: 0;
+}
+
+.file-name {
+    flex: 1;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-primary);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.file-size {
+    font-size: 11px;
+    color: var(--text-tertiary);
+    flex-shrink: 0;
+}
+
+/* 빈 상태 */
+.empty-state {
+    padding: var(--spacing-xl);
+    text-align: center;
+    color: var(--text-tertiary);
+    font-size: 13px;
+}
+
+/* 액션 버튼 영역 */
+.action-buttons {
+    padding: var(--spacing-lg);
+    border-top: 1px solid var(--border);
+    flex-shrink: 0;
+}
+
+/* RAG에 추가 버튼 */
+.btn-add-to-rag {
+    width: 100%;
+    padding: var(--spacing-md);
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border-radius: var(--radius-md);
+    font-size: 14px;
+    font-weight: 600;
+    transition: all 0.2s;
+}
+
+.btn-add-to-rag:hover:not(:disabled) {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+}
+
+.btn-add-to-rag:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* 스크롤바 스타일링 */
+.selected-files-content::-webkit-scrollbar {
+    width: 6px;
+}
+
+.selected-files-content::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.selected-files-content::-webkit-scrollbar-thumb {
+    background: var(--border);
+    border-radius: 3px;
+}
+
+.selected-files-content::-webkit-scrollbar-thumb:hover {
+    background: var(--text-tertiary);
+}

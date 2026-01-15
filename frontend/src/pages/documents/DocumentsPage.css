@@ -9,7 +9,7 @@
 
 /* 내부 컨테이너 */
 .documents-container {
-    max-width: 1400px;
+    max-width: 1600px;
     margin: 0 auto;
     padding: var(--spacing-xl);
     height: 100%;
@@ -34,16 +34,16 @@
     color: var(--text-secondary);
 }
 
-/* 문서 컨텐츠 영역 */
+/* 문서 컨텐츠 영역 - 2단 레이아웃 */
 .documents-content {
     flex: 1;
     min-height: 0;
     display: flex;
+    gap: var(--spacing-lg);
 }
 
-/* SourcesPanel을 전체 너비로 확장 */
-.documents-content .sources-panel {
-    width: 100%;
-    max-width: 100%;
-    min-width: 100%;
+/* 각 패널이 50%씩 차지 */
+.documents-content>* {
+    flex: 1;
+    min-width: 0;
 }
