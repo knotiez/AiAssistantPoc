@@ -1,8 +1,8 @@
 import { useState } from 'react';
-import { MainLayout } from '../components/Layout/MainLayout';
-import { SourcesPanel } from '../components/Sources/SourcesPanel';
-import { ChatPanel } from '../components/Chat/ChatPanel';
-import { StudioPanel } from '../components/Studio/StudioPanel';
+import { MainLayout } from '../../common/Layout/MainLayout';
+import { ChatSourcesPanel } from './components/ChatSourcesPanel';
+import { ChatPanel } from './components/ChatPanel';
+import { StudioPanel } from './components/StudioPanel';
 
 /**
  * ChatPage 컴포넌트 - 채팅 페이지
@@ -40,7 +40,7 @@ const ChatPage = () => {
     return (
         <MainLayout>
             {/* 왼쪽 패널: 출처 관리 + RAG 파일 목록 */}
-            <SourcesPanel />
+            <ChatSourcesPanel />
 
             {/* 가운데 패널: 채팅 인터페이스 */}
             <ChatPanel onRagDataUpdate={setLastRagData} />

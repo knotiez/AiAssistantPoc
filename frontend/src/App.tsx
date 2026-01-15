@@ -5,15 +5,15 @@ import './App.css';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 
 // 레이아웃 컴포넌트
-import { Header } from './components/Layout/Header';
+import { Header } from './common/Layout/Header';
 
 // 페이지 컴포넌트
-import HomePage from './pages/HomePage';
-import DocumentsPage from './pages/DocumentsPage';
-import ChatPage from './pages/ChatPage';
+import HomePage from './pages/home';
+import DocumentsPage from './pages/documents';
+import ChatPage from './pages/chat';
 
 // 공통 컴포넌트
-import { FloatingActionButton } from './components/common/FloatingActionButton';
+import { FloatingActionButton } from './common/FloatingActionButton/FloatingActionButton';
 
 /**
  * App 컴포넌트 - 애플리케이션의 최상위 컴포넌트
