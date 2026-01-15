@@ -106,7 +106,9 @@ public class ChromaVectorStore implements VectorStore {
             }
 
             Request request = new Request.Builder()
-                    .url(config.getChromaUrl() + "/api/v2/collections/" + collectionId + "/upsert")
+                    .url(config.getChromaUrl()
+                            + "/api/v2/tenants/default_tenant/databases/default_database/collections/" + collectionId
+                            + "/upsert")
                     .post(RequestBody.create(objectMapper.writeValueAsString(payload),
                             MediaType.parse("application/json")))
                     .build();
@@ -137,7 +139,9 @@ public class ChromaVectorStore implements VectorStore {
             payload.put("n_results", topK);
 
             Request request = new Request.Builder()
-                    .url(config.getChromaUrl() + "/api/v2/collections/" + collectionId + "/query")
+                    .url(config.getChromaUrl()
+                            + "/api/v2/tenants/default_tenant/databases/default_database/collections/" + collectionId
+                            + "/query")
                     .post(RequestBody.create(objectMapper.writeValueAsString(payload),
                             MediaType.parse("application/json")))
                     .build();
@@ -192,7 +196,9 @@ public class ChromaVectorStore implements VectorStore {
     public void clearAll() {
         try {
             Request deleteRequest = new Request.Builder()
-                    .url(config.getChromaUrl() + "/api/v2/collections/" + config.getChromaCollectionName())
+                    .url(config.getChromaUrl()
+                            + "/api/v2/tenants/default_tenant/databases/default_database/collections/"
+                            + config.getChromaCollectionName())
                     .delete()
                     .build();
             httpClient.newCall(deleteRequest).execute();

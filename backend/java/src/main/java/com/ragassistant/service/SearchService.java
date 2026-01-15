@@ -39,6 +39,10 @@ public class SearchService {
         List<VectorStore.SearchResult> results = vectorStore.search(vector, topK);
         log.info("[Search] Found {} results.", results.size());
 
+        for (int i = 0; i < results.size(); i++) {
+            log.info(results.get(i).getChunk().getText());
+        }
+
         return results;
     }
 }

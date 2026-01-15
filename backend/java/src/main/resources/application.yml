@@ -26,6 +26,8 @@ rag:
   chroma:
     url: ${CHROMA_URL:http://localhost:8000}
     collection-name: ${CHROMA_COLLECTION_NAME:rag_collection}
+  vector-store:
+    type: ${VECTOR_STORE_STRATEGY:CHROMA}
   lm-studio:
     api-url: ${LMSTUDIO_API_URL:http://localhost:1234/v1}
   embedding:

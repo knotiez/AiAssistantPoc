@@ -56,11 +56,34 @@ export const SourcesPanel = () => {
         const files = event.target.files;
         if (files && files.length > 0) {
             // FileList를 배열로 변환
-            const fileArray = Array.from(files);
-            setSelectedFiles(fileArray);
-            console.log('선택된 파일 개수:', fileArray.length);
-            console.log('파일 목록:', fileArray.map(f => f.name));
+            const newFileArray = Array.from(files);
+
+            // 기존 파일과 새 파일을 병합 (중복 제거)
+            // 파일의 고유성은 webkitRelativePath 또는 name으로 판단
+            const mergedFiles = [...selectedFiles];
+
+            newFileArray.forEach(newFile => {
+                // webkitRelativePath가 있으면 사용, 없으면 name 사용
+                const newFilePath = (newFile as any).webkitRelativePath || newFile.name;
+
+                // 기존 파일 중에 같은 경로의 파일이 있는지 확인
+                const isDuplicate = mergedFiles.some(existingFile => {
+                    const existingFilePath = (existingFile as any).webkitRelativePath || existingFile.name;
+                    return existingFilePath === newFilePath;
+                });
+
+                // 중복되지 않으면 추가
+                if (!isDuplicate) {
+                    mergedFiles.push(newFile);
+                }
+            });
+
+            setSelectedFiles(mergedFiles);
+            console.log('선택된 파일 개수:', mergedFiles.length);
+            console.log('새로 추가된 파일:', mergedFiles.length - selectedFiles.length);
         }
+        // input value를 초기화하여 같은 폴더를 다시 선택할 수 있도록 함
+        event.target.value = '';
     };
 
     // RAG 소스 목록 가져오기
@@ -140,7 +163,7 @@ export const SourcesPanel = () => {
 
     return (
         // 조건부 클래스: isCollapsed가 true면 'collapsed' 클래스 추가
-        <div className={`sources - panel panel ${isCollapsed ? 'collapsed' : ''} `}>
+        <div className={`sources-panel panel ${isCollapsed ? 'collapsed' : ''}`}>
             {/* 패널 헤더 */}
             <div className="panel-header">
                 <h2>출처</h2>

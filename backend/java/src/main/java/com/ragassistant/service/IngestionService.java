@@ -1,10 +1,10 @@
 package com.ragassistant.service;
 
 import com.ragassistant.model.DocumentChunk;
-import com.ragassistant.provider.chunking.MarkdownHeaderChunker;
+import com.ragassistant.provider.chunking.ChunkingProvider;
 import com.ragassistant.provider.embedding.EmbeddingBuilder;
 import com.ragassistant.provider.metadata.MetadataProvider;
-import com.ragassistant.provider.vectorstore.ChromaVectorStore;
+import com.ragassistant.provider.vectorstore.VectorStore;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import com.ragassistant.model.SourceDocument;
@@ -19,9 +19,9 @@ import java.util.List;
 @RequiredArgsConstructor
 public class IngestionService {
     private final MetadataProvider metadataProvider;
-    private final MarkdownHeaderChunker chunker;
+    private final ChunkingProvider chunker;
     private final EmbeddingBuilder embeddingBuilder;
-    private final ChromaVectorStore vectorStore;
+    private final VectorStore vectorStore;
     private final SourceDocumentRepository sourceRepo;
 
     public ProcessResult processFile(String filename, String content, String filePath) {
