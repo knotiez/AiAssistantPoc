@@ -1,9 +1,16 @@
 package com.ragassistant.config;
 
+import com.ragassistant.provider.chunking.ChunkingProvider;
+import com.ragassistant.provider.chunking.MarkdownHeaderChunker;
+import com.ragassistant.provider.chunking.UnstructuredChunkingProvider;
 import com.ragassistant.provider.metadata.LMStudioMetadataProvider;
 import com.ragassistant.provider.metadata.MetadataProvider;
 import com.ragassistant.provider.metadata.OpenAiMetadataProvider;
 import com.ragassistant.provider.metadata.RuleBasedMetadataProvider;
+import com.ragassistant.provider.vectorstore.ChromaVectorStore;
+import com.ragassistant.provider.vectorstore.MemoryVectorStore;
+import com.ragassistant.provider.vectorstore.VectorStore;
+
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -16,12 +23,6 @@ import org.springframework.context.annotation.Primary;
 public class IngestionConfig {
     @Value("${rag.openai.api-key}")
     private String openAiApiKey;
-
-    @Value("${rag.unstructured.api-key}")
-    private String unstructuredApiKey;
-
-    @Value("${rag.unstructured.api-url}")
-    private String unstructuredApiUrl;
 
     @Value("${rag.chroma.url}")
     private String chromaUrl;
@@ -41,7 +42,13 @@ public class IngestionConfig {
     @Value("${rag.chunking.strategy}")
     private String chunkingStrategy;
 
-    @Value("${rag.metadata.strategy}")
+    @Value("${rag.unstructured.api-key:}")
+    private String unstructuredApiKey;
+
+    @Value("${rag.unstructured.api-url:http://localhost:8000}")
+    private String unstructuredApiUrl;
+
+    @Value("${ingestion.metadata.strategy:RULE_BASED}")
     private String metadataStrategy;
 
     @Value("${rag.metadata.ai-model}")
@@ -145,6 +152,8 @@ public class IngestionConfig {
      * 메타데이터 프로바이더 팩토리
      * METADATA_STRATEGY 환경 변수에 따라 적절한 프로바이더를 반환합니다.
      */
+    // --- Strategy Factories ---
+
     @Bean
     @Primary
     public MetadataProvider metadataProvider(
@@ -165,5 +174,34 @@ public class IngestionConfig {
                 log.info("Using Rule-Based Metadata Provider");
                 return ruleBasedProvider;
         }
+    }
+
+    @Value("${ingestion.vector-store.type:CHROMA}")
+    private String vectorStoreType;
+
+    @Bean
+    @Primary
+    public ChunkingProvider chunkingProvider(
+            @Autowired MarkdownHeaderChunker markdownChunker,
+            @Autowired UnstructuredChunkingProvider unstructuredChunker) {
+        log.info("Initializing ChunkingProvider with strategy: {}", chunkingStrategy);
+
+        if ("UNSTRUCTURED".equalsIgnoreCase(chunkingStrategy)) {
+            return unstructuredChunker;
+        }
+        return markdownChunker;
+    }
+
+    @Bean
+    @Primary
+    public VectorStore vectorStore(
+            @Autowired ChromaVectorStore chromaStore,
+            @Autowired MemoryVectorStore memoryStore) {
+        log.info("Initializing VectorStore with type: {}", vectorStoreType);
+
+        if ("MEMORY".equalsIgnoreCase(vectorStoreType)) {
+            return memoryStore;
+        }
+        return chromaStore;
     }
 }

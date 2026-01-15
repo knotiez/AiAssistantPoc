@@ -3,10 +3,11 @@
     flex-direction: column;
     height: 100%;
     transition: all 0.3s ease;
-    width: 380px;
-    max-width: 380px;
-    min-width: 380px;
+    width: 420px;
+    max-width: 420px;
+    min-width: 420px;
     overflow: hidden;
+    flex-shrink: 0;
 }
 
 .sources-panel.collapsed {
@@ -72,6 +73,7 @@
     transition: background 0.2s;
     font-size: 13px;
     font-weight: 500;
+    margin-right: var(--spacing-xs);
 }
 
 .btn-add-source-header:hover {
@@ -100,6 +102,7 @@
     flex-direction: column;
     overflow: hidden;
     min-height: 0;
+    min-width: 0;
 }
 
 /* 상단 영역: 폴더 선택 + 선택된 파일 (스크롤 가능) */
@@ -112,6 +115,7 @@
     padding-bottom: var(--spacing-md);
     overflow-y: auto;
     min-height: 0;
+    min-width: 0;
 }
 
 /* 중간 고정 헤더 */
@@ -161,6 +165,7 @@
     padding-top: var(--spacing-md);
     overflow-y: auto;
     min-height: 0;
+    min-width: 0;
 }
 
 .btn-add-source {
@@ -199,6 +204,7 @@
     flex-direction: column;
     gap: var(--spacing-sm);
     margin-bottom: var(--spacing-lg);
+    min-width: 0;
 }
 
 /* 파일 목록 헤더 */
@@ -230,6 +236,7 @@
     font-size: 12px;
     font-weight: 600;
     white-space: nowrap;
+    margin: 0 var(--spacing-xs);
 }
 
 .btn-add-to-rag-compact:hover:not(:disabled) {
@@ -265,6 +272,7 @@
     background: var(--surface-variant);
     border-radius: var(--radius-sm);
     transition: background 0.2s;
+    min-width: 0;
 }
 
 .source-item:hover {
@@ -336,6 +344,7 @@
     display: flex;
     flex-direction: column;
     gap: var(--spacing-xs);
+    min-width: 0;
 }
 
 /* 스크롤바 스타일링 */
@@ -369,6 +378,7 @@
     background: var(--surface-variant);
     border-radius: var(--radius-sm);
     transition: background 0.2s;
+    min-width: 0;
 }
 
 .rag-source-item:hover {
@@ -379,6 +389,7 @@
     display: flex;
     align-items: center;
     gap: var(--spacing-sm);
+    min-width: 0;
 }
 
 .rag-file-name {
@@ -406,6 +417,9 @@
     display: flex;
     align-items: center;
     gap: 4px;
+    flex-shrink: 0;
+    font-size: 11px;
+    color: var(--text-tertiary);
 }
 
 /* 빈 상태 */

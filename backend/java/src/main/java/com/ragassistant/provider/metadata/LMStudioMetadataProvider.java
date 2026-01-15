@@ -10,11 +10,6 @@ import com.ragassistant.model.DocumentChunk;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.*;
 import org.springframework.stereotype.Service;
-import com.ragassistant.model.AiDocumentMetadata;
-import com.ragassistant.model.DocumentChunk;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
-
 import java.io.File;
 import java.time.LocalDate;
 import java.util.Arrays;
@@ -65,9 +60,31 @@ public class LMStudioMetadataProvider implements MetadataProvider {
                         userMsg.put("role", "user");
                         userMsg.put("content", "Document Content (First 2000 chars):\n" + contentPreview);
 
-                        // Response format for JSON (supported by newer LM Studio versions)
+                        // Response format for JSON Schema (required by some LM Studio versions)
                         ObjectNode responseFormat = payload.putObject("response_format");
                         responseFormat.put("type", "json_schema");
+                        ObjectNode jsonSchema = responseFormat.putObject("json_schema");
+                        jsonSchema.put("name", "document_metadata");
+                        jsonSchema.put("strict", true);
+
+                        ObjectNode schema = jsonSchema.putObject("schema");
+                        schema.put("type", "object");
+                        schema.put("additionalProperties", false);
+
+                        ArrayNode required = schema.putArray("required");
+                        required.add("title");
+                        required.add("docType");
+                        required.add("summary");
+                        required.add("permission");
+
+                        ObjectNode properties = schema.putObject("properties");
+                        properties.putObject("title").put("type", "string");
+                        properties.putObject("docType").put("type", "string");
+                        properties.putObject("summary").put("type", "string");
+
+                        ObjectNode permission = properties.putObject("permission");
+                        permission.put("type", "array");
+                        permission.putObject("items").put("type", "string");
 
                         Request request = new Request.Builder()
                                         .url(config.getLmStudioApiUrl() + "/chat/completions")
