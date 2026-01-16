@@ -1,10 +1,10 @@
 package com.ragassistant.service;
 
 import com.ragassistant.model.DocumentChunk;
-import com.ragassistant.provider.chunking.ChunkingProvider;
+import com.ragassistant.provider.chunking.ChunkingBuilder;
 import com.ragassistant.provider.embedding.EmbeddingBuilder;
-import com.ragassistant.provider.metadata.MetadataProvider;
-import com.ragassistant.provider.vectorstore.VectorStore;
+import com.ragassistant.provider.metadata.MetadataBuilder;
+import com.ragassistant.provider.vectorstore.VectorStoreBuilder;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import com.ragassistant.model.SourceDocument;
@@ -18,10 +18,10 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class IngestionService {
-    private final MetadataProvider metadataProvider;
-    private final ChunkingProvider chunker;
+    private final MetadataBuilder metadataBuilder;
+    private final ChunkingBuilder chunkingBuilder;
     private final EmbeddingBuilder embeddingBuilder;
-    private final VectorStore vectorStore;
+    private final VectorStoreBuilder vectorStoreBuilder;
     private final SourceDocumentRepository sourceRepo;
 
     public ProcessResult processFile(String filename, String content, String filePath) {
@@ -29,11 +29,11 @@ public class IngestionService {
 
         try {
             // 1. Metadata extraction
-            DocumentChunk.ChunkMetadata meta = metadataProvider.extract(filePath, content, filename);
+            DocumentChunk.ChunkMetadata meta = metadataBuilder.extract(filePath, content, filename);
             log.info("Step 1: Metadata built for {}", filename);
 
             // 2. Chunking
-            List<DocumentChunk> chunks = chunker.splitDocument(content, meta);
+            List<DocumentChunk> chunks = chunkingBuilder.splitDocument(content, meta);
             log.info("Step 2: Split into {} chunks", chunks.size());
 
             // 3. Embedding
@@ -41,7 +41,7 @@ public class IngestionService {
             log.info("Step 3: Embedded {} chunks", embeddedChunks.size());
 
             // 4. Vector Store
-            vectorStore.storeChunks(embeddedChunks);
+            vectorStoreBuilder.storeChunks(embeddedChunks);
             log.info("Step 4: Stored {} chunks to vector store", embeddedChunks.size());
 
             // 5. SQLite Tracking

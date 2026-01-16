@@ -42,8 +42,9 @@ public class UnstructuredChunkingProvider implements ChunkingProvider {
             // Removed strategy=fast and chunking_strategy=by_title to get RAW elements.
             // This avoids potential data loss or over-agglomeration issues.
             // These are now handled by the `max_characters` and `overlap` parameters.
-            builder.addFormDataPart("max_characters", "1000")
-                    .addFormDataPart("overlap", "200");
+            builder.addFormDataPart("max_characters", String.valueOf(config.getUnstructuredMaxCharacters()))
+                    .addFormDataPart("chunking_strategy", config.getUnstructuredChunkingStrategy())
+                    .addFormDataPart("overlap", String.valueOf(config.getUnstructuredOverlap()));
 
             String url = config.getUnstructuredApiUrl() + "/general/v0/general";
             log.info("[Unstructured] Calling API URL: {}", url);

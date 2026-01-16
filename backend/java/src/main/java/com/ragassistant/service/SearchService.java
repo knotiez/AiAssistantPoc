@@ -2,8 +2,8 @@ package com.ragassistant.service;
 
 import com.ragassistant.model.DocumentChunk;
 import com.ragassistant.provider.embedding.EmbeddingBuilder;
-import com.ragassistant.provider.vectorstore.ChromaVectorStore;
 import com.ragassistant.provider.vectorstore.VectorStore;
+import com.ragassistant.provider.vectorstore.VectorStoreBuilder;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -16,7 +16,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class SearchService {
     private final EmbeddingBuilder embeddingBuilder;
-    private final ChromaVectorStore vectorStore;
+    private final VectorStoreBuilder vectorStoreBuilder;
 
     public List<VectorStore.SearchResult> execute(String query, int topK) {
         log.info("Searching for: \"{}\"", query);
@@ -36,7 +36,7 @@ public class SearchService {
         }
 
         // 2. Search in Vector Store
-        List<VectorStore.SearchResult> results = vectorStore.search(vector, topK);
+        List<VectorStore.SearchResult> results = vectorStoreBuilder.search(vector, topK);
         log.info("[Search] Found {} results.", results.size());
 
         for (int i = 0; i < results.size(); i++) {
