@@ -21,8 +21,10 @@ public class EmbeddingBuilder {
         EmbeddingProvider provider;
 
         if ("LMSTUDIO".equals(strategy)) {
+            log.info("Using LMSTUDIO Embedding with model: {}", config.getEmbeddingModel());
             provider = lmStudioProvider;
         } else {
+            log.info("Using OPENAI Embedding with model: {}", config.getEmbeddingModel());
             provider = openAiProvider;
         }
 

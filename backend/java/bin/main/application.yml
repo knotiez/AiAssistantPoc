@@ -30,6 +30,7 @@ rag:
     strategy: ${VECTOR_STORE_STRATEGY:CHROMA}
   lm-studio:
     api-url: ${LMSTUDIO_API_URL:http://localhost:1234/v1}
+    model-name: ${LMSTUDIO_MODEL_NAME:qwen2.5-7b-instruct-1m}
   embedding:
     strategy: ${EMBEDDING_STRATEGY:OPENAI}
     model: ${EMBEDDING_MODEL:text-embedding-3-small}

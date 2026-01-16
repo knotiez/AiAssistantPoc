@@ -12,6 +12,7 @@ import okhttp3.*;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -59,13 +60,22 @@ public class ChatService {
         String answer = callOpenAI(systemPrompt, query);
 
         // 5. Build Response Object
+        Map<String, Object> pipelineInfo = new HashMap<>();
+        pipelineInfo.put("metadataStrategy", config.getMetadataStrategy());
+        pipelineInfo.put("metadataModel", config.getMetadataAiModel());
+        pipelineInfo.put("chunkingStrategy", config.getChunkingStrategy());
+        pipelineInfo.put("embeddingStrategy", config.getEmbeddingStrategy());
+        pipelineInfo.put("embeddingModel", config.getEmbeddingModel());
+        pipelineInfo.put("vectorStoreStrategy", config.getVectorStoreStrategy());
+        pipelineInfo.put("chatModel", config.getChatAiModel());
+        pipelineInfo.put("chatRetrievalCount", config.getChatRetrievalCount());
+        pipelineInfo.put("chatSimilarityThreshold", config.getChatSimilarityThreshold());
+
         return ChatResponse.builder()
                 .answer(answer)
                 .chunks(filteredResults)
                 .fullPrompt(String.format("--- SYSTEM PROMPT ---\n%s\n\n--- USER QUERY ---\n%s", systemPrompt, query))
-                .pipelineInfo(Map.of(
-                        "embeddingStrategy", config.getEmbeddingStrategy(),
-                        "chatModel", config.getChatAiModel()))
+                .pipelineInfo(pipelineInfo)
                 .build();
     }
 

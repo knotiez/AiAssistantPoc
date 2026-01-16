@@ -36,7 +36,7 @@ public class MetadataBuilder {
                 provider = openAiProvider;
                 break;
             case "LMSTUDIO_BASED":
-                log.info("Using LMSTUDIO_BASED Metadata Extraction Strategy with model: {}",
+                log.info("Using LMSTUDIO_BASED Metadata Extraction with model: {}",
                         config.getMetadataAiModel());
                 provider = lmStudioProvider;
                 break;

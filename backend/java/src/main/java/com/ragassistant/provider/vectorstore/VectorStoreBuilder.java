@@ -43,4 +43,21 @@ public class VectorStoreBuilder {
 
         store.storeChunks(chunks);
     }
+
+    public List<VectorStore.SearchResult> search(List<Double> queryVector, int topK) {
+        String strategy = config.getVectorStoreStrategy();
+        VectorStore store;
+
+        switch (strategy.toUpperCase()) {
+            case "MEMORY":
+                store = memoryStore;
+                break;
+            case "CHROMA":
+            default:
+                store = chromaStore;
+                break;
+        }
+
+        return store.search(queryVector, topK);
+    }
 }
