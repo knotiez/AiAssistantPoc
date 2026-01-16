@@ -64,3 +64,6 @@ Thumbs.db
 vector-store.json
 **/vector-store.json
 
+# --- Sqlite database ---
+rag_assistant.db
+**/rag_assistant.db
