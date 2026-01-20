@@ -64,12 +64,12 @@ const SettingsPage: React.FC = () => {
     const [showLmStudioChunkingOptions, setShowLmStudioChunkingOptions] = useState(false);
     const [isApiKeyModalOpen, setIsApiKeyModalOpen] = useState(false);
 
-    // API 키 마스킹 함수 (처음 4자 + ... + 마지막 4자)
+    // API 키 마스킹 함수 (처음 3자 + ... + 마지막 3자)
     const maskApiKey = (key: string | null): string => {
-        if (!key || key.length < 8) return key || '';
-        const first4 = key.substring(0, 4);
-        const last4 = key.substring(key.length - 4);
-        return `${first4}...${last4}`;
+        if (!key || key.length < 6) return key || '';
+        const first3 = key.substring(0, 3);
+        const last3 = key.substring(key.length - 3);
+        return `${first3}...${last3}`;
     };
 
     // Exclusive Toggle Handlers
@@ -89,9 +89,10 @@ const SettingsPage: React.FC = () => {
 
     const loadConfig = async () => {
         try {
-            const response = await fetch('/api/config');
+            const response = await fetch('/api/config', { method: 'GET' });
             const data = await response.json();
             setConfig(data);
+            console.log('Load Config Data', data);
         } catch (error) {
             console.error('Failed to load config:', error);
         } finally {
@@ -528,7 +529,7 @@ const SettingsPage: React.FC = () => {
                     </CollapsibleOverlay>
 
                     <CollapsibleOverlay
-                        title="⚙️ 시스템 프롬프트"
+                        title="⚙️ 시스템 프롬프트 설정"
                         isOpen={showChatPrompt}
                         onToggle={toggleChatPrompt}
                     >

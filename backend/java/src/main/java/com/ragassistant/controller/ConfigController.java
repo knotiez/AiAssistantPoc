@@ -1,7 +1,7 @@
 package com.ragassistant.controller;
 
-import com.ragassistant.model.ConfigHistory;
-import com.ragassistant.model.RagConfig;
+import com.ragassistant.model.entity.ConfigHistory;
+import com.ragassistant.model.entity.RagConfig;
 import com.ragassistant.service.ConfigService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

@@ -7,7 +7,7 @@ import com.ragassistant.provider.metadata.MetadataBuilder;
 import com.ragassistant.provider.vectorstore.VectorStoreBuilder;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import com.ragassistant.model.SourceDocument;
+import com.ragassistant.model.entity.SourceDocument;
 import com.ragassistant.repository.SourceDocumentRepository;
 import org.springframework.stereotype.Service;
 
