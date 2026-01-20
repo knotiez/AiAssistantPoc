@@ -13,6 +13,7 @@ import DocumentsPage from './pages/documents';
 import ChatPage from './pages/chat';
 import { LoginPage, SignupPage } from './pages/Login';
 import ManageUser from './pages/Manage';
+import SettingsPage from './pages/rag-settings/SettingsPage';
 
 // 공통 컴포넌트
 import { FloatingActionButton } from './common/FloatingActionButton/FloatingActionButton';
@@ -25,7 +26,7 @@ import { FloatingActionButton } from './common/FloatingActionButton/FloatingActi
  * - /home : 홈 페이지 (대시보드)
  * - /documents : RAG 문서 관리 페이지
  * - /chat : 채팅 페이지
- * - /settings : 모델 설정 페이지 (추후 추가)
+ * - /rag-settings : RAG 설정 페이지
  */
 function App() {
   return (
@@ -57,8 +58,8 @@ function App() {
           {/* 채팅 페이지 - 3단 레이아웃 */}
           <Route path="/chat" element={<ChatPage />} />
 
-          {/* 모델 설정 페이지 (추후 추가) */}
-          {/* <Route path="/settings" element={<SettingsPage />} /> */}
+          {/* RAG 설정 페이지 */}
+          <Route path="/rag-settings" element={<SettingsPage />} />
         </Routes>
 
         {/* 우측 하단 플로팅 버튼 - 모든 페이지에 공통으로 표시 */}

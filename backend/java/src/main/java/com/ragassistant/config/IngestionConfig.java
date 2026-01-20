@@ -1,207 +1,150 @@
 package com.ragassistant.config;
 
-import com.ragassistant.provider.chunking.ChunkingProvider;
-import com.ragassistant.provider.chunking.MarkdownHeaderChunker;
-import com.ragassistant.provider.chunking.UnstructuredChunkingProvider;
-import com.ragassistant.provider.metadata.LMStudioMetadataProvider;
-import com.ragassistant.provider.metadata.MetadataProvider;
-import com.ragassistant.provider.metadata.OpenAiMetadataProvider;
-import com.ragassistant.provider.metadata.RuleBasedMetadataProvider;
-import com.ragassistant.provider.vectorstore.ChromaVectorStore;
-import com.ragassistant.provider.vectorstore.MemoryVectorStore;
-import com.ragassistant.provider.vectorstore.VectorStore;
-
+import com.ragassistant.service.ConfigService;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Primary;
+import jakarta.annotation.PostConstruct;
 
 @Slf4j
 @Configuration
 public class IngestionConfig {
-    @Value("${rag.openai.api-key}")
-    private String openAiApiKey;
+    private final ConfigService configService;
 
-    @Value("${rag.chroma.url}")
-    private String chromaUrl;
+    public IngestionConfig(ConfigService configService) {
+        this.configService = configService;
+    }
 
-    @Value("${rag.chroma.collection-name}")
-    private String chromaCollectionName;
+    // ========================================================================
+    // API KEYS - DB에서 복호화하여 사용
+    // ========================================================================
 
-    @Value("${rag.lm-studio.api-url}")
-    private String lmStudioApiUrl;
-
-    @Value("${rag.embedding.strategy}")
-    private String embeddingStrategy;
-
-    @Value("${rag.embedding.model}")
-    private String embeddingModel;
-
-    @Value("${rag.chunking.strategy}")
-    private String chunkingStrategy;
-
-    @Value("${rag.unstructured.api-key:}")
-    private String unstructuredApiKey;
-
-    @Value("${rag.unstructured.api-url:http://localhost:8000}")
-    private String unstructuredApiUrl;
-
-    @Value("${ingestion.metadata.strategy:RULE_BASED}")
-    private String metadataStrategy;
-
-    @Value("${rag.metadata.ai-model}")
-    private String metadataAiModel;
-
-    @Value("${rag.chat.model}")
-    private String chatAiModel;
-
-    @Value("${rag.chat.temperature}")
-    private double chatTemperature;
-
-    @Value("${rag.chat.max-context-length}")
-    private int maxContextLength;
-
-    @Value("${rag.chat.retrieval-count}")
-    private int chatRetrievalCount;
-
-    @Value("${rag.chat.similarity-threshold}")
-    private double chatSimilarityThreshold;
-
-    @Value("${rag.chat.system-prompt:You are a helpful assistant.}")
-    private String chatSystemPrompt;
-
-    @Value("${METADATA_SYSTEM_PROMPT:You are a professional librarian. Extract metadata from the document in JSON format.}")
-    private String metadataSystemPrompt;
-
-    // Getters
     public String getOpenAiApiKey() {
-        return openAiApiKey;
+        return configService.getOpenAiApiKey();
     }
 
     public String getUnstructuredApiKey() {
-        return unstructuredApiKey;
+        return configService.getUnstructuredApiKey();
     }
 
+    // ========================================================================
+    // DYNAMIC CONFIG - DB에서 관리
+    // ========================================================================
+
     public String getUnstructuredApiUrl() {
-        return unstructuredApiUrl;
+        return configService.getConfig().getUnstructuredApiUrl();
     }
 
     public String getChromaUrl() {
-        return chromaUrl;
+        return configService.getConfig().getChromaUrl();
     }
 
     public String getChromaCollectionName() {
-        return chromaCollectionName;
+        return configService.getConfig().getChromaCollectionName();
     }
 
     public String getLmStudioApiUrl() {
-        return lmStudioApiUrl;
-    }
-
-    public String getEmbeddingStrategy() {
-        return embeddingStrategy;
-    }
-
-    public String getEmbeddingModel() {
-        return embeddingModel;
-    }
-
-    public String getChunkingStrategy() {
-        return chunkingStrategy;
+        return configService.getConfig().getLmStudioApiUrl();
     }
 
     public String getMetadataStrategy() {
-        return metadataStrategy;
+        return configService.getConfig().getMetadataStrategy();
     }
 
     public String getMetadataAiModel() {
-        return metadataAiModel;
-    }
-
-    public String getChatAiModel() {
-        return chatAiModel;
-    }
-
-    public double getChatTemperature() {
-        return chatTemperature;
-    }
-
-    public int getMaxContextLength() {
-        return maxContextLength;
-    }
-
-    public int getChatRetrievalCount() {
-        return chatRetrievalCount;
-    }
-
-    public double getChatSimilarityThreshold() {
-        return chatSimilarityThreshold;
-    }
-
-    public String getChatSystemPrompt() {
-        return chatSystemPrompt;
+        String strategy = getMetadataStrategy();
+        if ("OPENAI_BASED".equals(strategy)) {
+            return configService.getConfig().getMetadataAiModel();
+        } else if ("LMSTUDIO_BASED".equals(strategy)) {
+            return configService.getConfig().getMetadataLmStudioModel();
+        }
+        return null;
     }
 
     public String getMetadataSystemPrompt() {
-        return metadataSystemPrompt;
+        return configService.getConfig().getMetadataSystemPrompt();
     }
 
-    /**
-     * 메타데이터 프로바이더 팩토리
-     * METADATA_STRATEGY 환경 변수에 따라 적절한 프로바이더를 반환합니다.
-     */
-    // --- Strategy Factories ---
-
-    @Bean
-    @Primary
-    public MetadataProvider metadataProvider(
-            @Autowired(required = false) RuleBasedMetadataProvider ruleBasedProvider,
-            @Autowired(required = false) OpenAiMetadataProvider openAiProvider,
-            @Autowired(required = false) LMStudioMetadataProvider lmStudioProvider) {
-        log.info("Initializing MetadataProvider with strategy: {}", metadataStrategy);
-
-        switch (metadataStrategy.toUpperCase()) {
-            case "OPENAI_BASED":
-                log.info("Using OpenAI Metadata Provider with model: {}", metadataAiModel);
-                return openAiProvider;
-            case "LMSTUDIO_BASED":
-                log.info("Using LM Studio Metadata Provider with model: {}", metadataAiModel);
-                return lmStudioProvider;
-            case "RULE_BASED":
-            default:
-                log.info("Using Rule-Based Metadata Provider");
-                return ruleBasedProvider;
-        }
+    public String getChunkingStrategy() {
+        return configService.getConfig().getChunkingStrategy();
     }
 
-    @Value("${ingestion.vector-store.type:CHROMA}")
-    private String vectorStoreType;
-
-    @Bean
-    @Primary
-    public ChunkingProvider chunkingProvider(
-            @Autowired MarkdownHeaderChunker markdownChunker,
-            @Autowired UnstructuredChunkingProvider unstructuredChunker) {
-        log.info("Initializing ChunkingProvider with strategy: {}", chunkingStrategy);
-
-        if ("UNSTRUCTURED".equalsIgnoreCase(chunkingStrategy)) {
-            return unstructuredChunker;
-        }
-        return markdownChunker;
+    public Integer getUnstructuredMaxCharacters() {
+        Integer val = configService.getConfig().getUnstructuredMaxCharacters();
+        return val != null ? val : 1000;
     }
 
-    @Bean
-    @Primary
-    public VectorStore vectorStore(
-            @Autowired ChromaVectorStore chromaStore,
-            @Autowired MemoryVectorStore memoryStore) {
-        log.info("Initializing VectorStore with type: {}", vectorStoreType);
+    public String getUnstructuredChunkingStrategy() {
+        String val = configService.getConfig().getUnstructuredChunkingStrategy();
+        return val != null ? val : "by_title";
+    }
 
-        if ("MEMORY".equalsIgnoreCase(vectorStoreType)) {
-            return memoryStore;
+    public Integer getUnstructuredOverlap() {
+        Integer val = configService.getConfig().getUnstructuredOverlap();
+        return val != null ? val : 200;
+    }
+
+    public String getChunkingLmStudioModel() {
+        String val = configService.getConfig().getChunkingLmStudioModel();
+        return val != null && !val.isEmpty() ? val : "qwen2.5-7b-instruct-1m";
+    }
+
+    public String getEmbeddingStrategy() {
+        return configService.getConfig().getEmbeddingStrategy();
+    }
+
+    public String getEmbeddingModel() {
+        String strategy = getEmbeddingStrategy();
+        if ("OPENAI".equals(strategy)) {
+            return configService.getConfig().getEmbeddingOpenAiModel();
+        } else if ("LMSTUDIO".equals(strategy)) {
+            return configService.getConfig().getEmbeddingLmStudioModel();
         }
-        return chromaStore;
+        return "text-embedding-3-small";
+    }
+
+    public String getVectorStoreStrategy() {
+        return configService.getConfig().getVectorStoreStrategy();
+    }
+
+    public String getChatAiModel() {
+        return configService.getConfig().getChatOpenAiModel();
+    }
+
+    public double getChatTemperature() {
+        return configService.getConfig().getChatTemperature();
+    }
+
+    public int getChatRetrievalCount() {
+        return configService.getConfig().getChatRetrievalCount();
+    }
+
+    public double getChatSimilarityThreshold() {
+        return configService.getConfig().getChatSimilarityThreshold();
+    }
+
+    public String getChatSystemPrompt() {
+        return configService.getConfig().getChatSystemPrompt();
+    }
+
+    public int getMaxContextLength() {
+        return configService.getConfig().getMaxContextLength();
+    }
+
+    // Deprecated - 호환성 유지
+    public String getLmStudioModelName() {
+        return configService.getConfig().getMetadataLmStudioModel();
+    }
+
+    @PostConstruct
+    public void logConfiguration() {
+        log.info("=".repeat(80));
+        log.info("RAG Configuration (DB-based with Encryption)");
+        log.info("=".repeat(80));
+        log.info("Metadata Strategy: {}", getMetadataStrategy());
+        log.info("Chunking Strategy: {}", getChunkingStrategy());
+        log.info("Embedding Strategy: {}", getEmbeddingStrategy());
+        log.info("Vector Store Strategy: {}", getVectorStoreStrategy());
+        log.info("Chat AI Model: {}", getChatAiModel());
+        log.info("=".repeat(80));
     }
 }

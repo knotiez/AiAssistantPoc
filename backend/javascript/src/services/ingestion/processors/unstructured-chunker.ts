@@ -29,7 +29,7 @@ export class UnstructuredChunkingProvider extends ChunkingProvider {
                 formData.append('files', blob, path.basename(commonMeta.filePath));
 
                 // 옵션 추가
-                formData.append('strategy', 'fast');
+                // formData.append('strategy', 'fast');
                 formData.append('chunking_strategy', 'by_title');
                 formData.append('max_characters', '1000');
                 formData.append('overlap', '200');

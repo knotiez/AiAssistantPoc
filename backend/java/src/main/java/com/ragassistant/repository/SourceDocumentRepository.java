@@ -1,6 +1,6 @@
 package com.ragassistant.repository;
 
-import com.ragassistant.model.SourceDocument;
+import com.ragassistant.model.entity.SourceDocument;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

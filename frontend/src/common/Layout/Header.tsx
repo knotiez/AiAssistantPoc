@@ -63,10 +63,10 @@ export const Header = () => {
 
                 {/* 모델 설정 - /settings 경로로 이동 (추후 페이지 추가 예정) */}
                 <NavLink
-                    to="/settings"
+                    to="/rag-settings"
                     className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}
                 >
-                    모델 설정
+                    RAG Setting
                 </NavLink>
             </nav>
 

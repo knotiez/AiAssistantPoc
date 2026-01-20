@@ -27,9 +27,10 @@ rag:
     url: ${CHROMA_URL:http://localhost:8000}
     collection-name: ${CHROMA_COLLECTION_NAME:rag_collection}
   vector-store:
-    type: ${VECTOR_STORE_STRATEGY:CHROMA}
+    strategy: ${VECTOR_STORE_STRATEGY:CHROMA}
   lm-studio:
     api-url: ${LMSTUDIO_API_URL:http://localhost:1234/v1}
+    model-name: ${LMSTUDIO_MODEL_NAME:qwen2.5-7b-instruct-1m}
   embedding:
     strategy: ${EMBEDDING_STRATEGY:OPENAI}
     model: ${EMBEDDING_MODEL:text-embedding-3-small}
@@ -38,9 +39,11 @@ rag:
   metadata:
     strategy: ${METADATA_STRATEGY:RULE_BASED}
     ai-model: ${METADATA_AI_MODEL:gpt-4o-mini}
+    system-prompt: ${METADATA_SYSTEM_PROMPT:You are a professional librarian. Extract metadata from the document in JSON format.}
   chat:
     model: ${CHAT_AI_MODEL:gpt-4o-mini}
     temperature: ${CHAT_TEMPERATURE:0}
     max-context-length: ${MAX_CONTEXT_LENGTH:2000}
     retrieval-count: ${CHAT_RETRIEVAL_COUNT:5}
     similarity-threshold: ${CHAT_SIMILARITY_THRESHOLD:0.5}
+    system-prompt: ${CHAT_SYSTEM_PROMPT:You are a helpful assistant.}

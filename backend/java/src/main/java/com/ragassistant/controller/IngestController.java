@@ -88,7 +88,7 @@ public class IngestController {
     @GetMapping("/sources")
     public ResponseEntity<?> getSources() {
         try {
-            List<com.ragassistant.model.SourceDocument> sources = ingestionService.getAllSources();
+            List<com.ragassistant.model.entity.SourceDocument> sources = ingestionService.getAllSources();
             return ResponseEntity.ok(Map.of(
                     "success", true,
                     "sources", sources));
