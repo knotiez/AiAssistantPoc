@@ -1,4 +1,4 @@
-package com.ragassistant.model;
+package com.ragassistant.model.entity;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;

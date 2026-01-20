@@ -66,7 +66,7 @@ export const Header = () => {
                     to="/rag-settings"
                     className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}
                 >
-                    모델 설정
+                    RAG Setting
                 </NavLink>
             </nav>
 

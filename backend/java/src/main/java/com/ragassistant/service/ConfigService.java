@@ -1,7 +1,7 @@
 package com.ragassistant.service;
 
-import com.ragassistant.model.ConfigHistory;
-import com.ragassistant.model.RagConfig;
+import com.ragassistant.model.entity.ConfigHistory;
+import com.ragassistant.model.entity.RagConfig;
 import com.ragassistant.repository.ConfigHistoryRepository;
 import com.ragassistant.repository.RagConfigRepository;
 import com.ragassistant.util.EncryptionUtil;
@@ -106,6 +106,20 @@ public class ConfigService {
         if (cachedConfig == null) {
             reloadConfig();
         }
+        log.info("==========================================================");
+        log.info("Get Config Data : metadataStrategy ({})", cachedConfig.getMetadataStrategy());
+        log.info("Get Config Data : metadataAiModel ({})", cachedConfig.getMetadataAiModel());
+        log.info("Get Config Data : metadataLmStudioModel ({})", cachedConfig.getMetadataLmStudioModel());
+        log.info("==========================================================");
+        log.info("Get Config Data : chunkingStrategy ({})", cachedConfig.getChunkingStrategy());
+        log.info("==========================================================");
+        log.info("Get Config Data : embeddingStrategy ({})", cachedConfig.getEmbeddingStrategy());
+        log.info("Get Config Data : embeddingOpenAiModel ({})", cachedConfig.getEmbeddingOpenAiModel());
+        log.info("==========================================================");
+        log.info("Get Config Data : vectorStoreStrategy ({})", cachedConfig.getVectorStoreStrategy());
+        log.info("Get Config Data : chromaCollectionName ({})", cachedConfig.getChromaCollectionName());
+        log.info("==========================================================");
+
         return cachedConfig;
     }
 
@@ -218,5 +232,6 @@ public class ConfigService {
         }
         this.cachedConfig = configs.get(0);
         log.info("Configuration cache reloaded");
+        log.info("Loaded configuration from database ({})", configs.get(0));
     }
 }
